@@ -18,10 +18,10 @@ def build_exe():
     try:
         import PyInstaller
     except ImportError:
-        print("\n❌ PyInstaller not found!")
+        print("\n[ERROR] PyInstaller not found!")
         print("Installing PyInstaller...")
         subprocess.check_call([sys.executable, "-m", "pip", "install", "pyinstaller"])
-        print("✅ PyInstaller installed successfully\n")
+        print("[SUCCESS] PyInstaller installed successfully\n")
     
     # PyInstaller command
     cmd = [
@@ -44,7 +44,7 @@ def build_exe():
         result = subprocess.run(cmd, check=True)
         
         print("\n" + "=" * 60)
-        print("✅ Build successful!")
+        print("[SUCCESS] Build successful!")
         print("=" * 60)
         print(f"\nExecutable location: dist\\MLBevo_LogViewer.exe")
         print(f"Size: ~{os.path.getsize('dist/MLBevo_LogViewer.exe') / (1024*1024):.1f} MB")
@@ -52,7 +52,7 @@ def build_exe():
         
     except subprocess.CalledProcessError as e:
         print("\n" + "=" * 60)
-        print("❌ Build failed!")
+        print("[ERROR] Build failed!")
         print("=" * 60)
         print(f"Error: {e}")
         sys.exit(1)
