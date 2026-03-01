@@ -454,7 +454,7 @@ class ResultsTableWidget(QWidget):
         self.count_label.setText(f"{count} result{'s' if count != 1 else ''}")
     
     def format_value(self, value: str) -> str:
-        """Format value - handles scientific notation and hex values"""
+        """Format value - displays full values, wraps hex in 8-byte lines"""
         trimmed = value.strip()
         
         # Check for scientific notation (e.g., "9.8999999999999993E+37")
@@ -472,26 +472,27 @@ class ResultsTableWidget(QWidget):
         return self.format_hex_value(trimmed)
     
     def format_hex_value(self, value: str) -> str:
-        """Format hex values for better readability"""
+        """Format hex values - wraps every 8 bytes (16 hex chars) with newline"""
         trimmed = value.strip()
         
         # Case 1: bytes separated by spaces (e.g., "07 00 FF 00")
         bytes_match = re.findall(r'[0-9A-Fa-f]{2}', trimmed)
         is_byte_array = bool(bytes_match) and len(''.join(bytes_match)) == len(trimmed.replace(' ', ''))
         
-        if is_byte_array and len(bytes_match) >= 8:
+        if is_byte_array:
             # Wrap every 8 bytes with newline
             chunks = []
             for i in range(0, len(bytes_match), 8):
                 chunks.append(' '.join(bytes_match[i:i+8]))
             return '\n'.join(chunks)
         
-        # Case 2: continuous hex without spaces
-        if re.match(r'^[0-9A-Fa-f]{17,}$', trimmed):
-            # Wrap every 8 characters
-            chunks = [trimmed[i:i+8] for i in range(0, len(trimmed), 8)]
+        # Case 2: continuous hex without spaces (wrap every 16 hex characters = 8 bytes)
+        if re.match(r'^[0-9A-Fa-f]+$', trimmed):
+            # Wrap every 16 hex chars (8 bytes)
+            chunks = [trimmed[i:i+16] for i in range(0, len(trimmed), 16)]
             return '\n'.join(chunks)
         
+        # Return full value as-is if not recognized as hex
         return value
 
 
